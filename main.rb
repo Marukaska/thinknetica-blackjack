@@ -8,10 +8,10 @@ class TextUI
   def introduction
     # запрашиваем имя игрока
     # создаем переменную @player из класса Player
-    # запускаем игру start
   end
 
   def start
+    introduction
     loop do
       # создаем новую колоду Deck.new
       # мешаем колоду

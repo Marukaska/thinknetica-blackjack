@@ -1,18 +1,26 @@
 # frozen_string_literal: true
 
+require_relative 'card'
+
 class Deck
+  attr_reader :cards
+
   SUITS = %w[♠️ ♥️ ♦️ ♣️]
-  VALUES = %w[2 3 4 5 6 7 8 10 9 В Д К Т]
+  VALUES = %w[2 3 4 5 6 7 8 9 10 В Д К Т]
 
   def initialize
-    @cards = [] #создаем колоду из объектов класса Card
+    @cards = []
+    SUITS.each do |suit|
+      VALUES.each { |value| @cards << Card.new(suit, value) }
+    end
+    shuffle!
   end
 
   def shuffle!
-    #мешаем карты
+    @cards.shuffle!
   end
 
   def deal_card
-    #выдаем карту
+    @cards.pop
   end
 end

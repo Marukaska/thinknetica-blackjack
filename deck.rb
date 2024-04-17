@@ -5,14 +5,12 @@ require_relative 'card'
 class Deck
   attr_reader :cards
 
-  SUITS = %w[♠️ ♥️ ♦️ ♣️]
-  VALUES = %w[2 3 4 5 6 7 8 9 10 В Д К Т]
+  SUITS = %w[♠️ ♥️ ♦️ ♣️].freeze
+  VALUES = %w[2 3 4 5 6 7 8 9 10 В Д К Т].freeze
 
   def initialize
     @cards = []
-    SUITS.each do |suit|
-      VALUES.each { |value| @cards << Card.new(suit, value) }
-    end
+    SUITS.each { |suit| VALUES.each { |value| @cards << Card.new(suit, value) } }
     shuffle!
   end
 

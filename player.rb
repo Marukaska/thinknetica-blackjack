@@ -7,7 +7,7 @@ class Player
     @hand = Hand.new
   end
 
-  def take_card
-    # добавить карту в "руку"
+  def take_card(deck)
+    @hand.add_card(deck.deal_card)
   end
 end

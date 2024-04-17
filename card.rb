@@ -9,6 +9,8 @@ class Card
   end
 
   def cost
-    #определяем "стоимость" карты
+    return 10 if %w[В Д К].include?(@value)
+    return 11 if @value == "Т"
+    @value.to_i
   end
 end

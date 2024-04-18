@@ -39,7 +39,7 @@ module TextHelper
       }
     },
     draw_game: {
-      heading: 'Ничья! Вернули на счет дилеру и игроку на счет 10$!',
+      heading: 'Ничья! Вернули на счет дилеру и игроку 10$!',
       method: {
         name: 'score_print',
         arg: 'end_game'

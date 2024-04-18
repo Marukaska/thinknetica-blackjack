@@ -17,7 +17,7 @@ class Player
   end
 
   def show_hand
-    show_hand = @hand.cards.map { |card| "[#{card.value}#{card.suit}]" }
+    show_hand = @hand.cards.map { |card| "[ #{card.value}#{card.suit} ]" }
     show_hand.join(', ')
   end
 end

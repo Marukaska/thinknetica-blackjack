@@ -5,14 +5,17 @@ require_relative 'dealer'
 require_relative 'deck'
 require_relative 'hand'
 require_relative 'player'
+require_relative 'text_helper'
 
 class TextUI
+  include TextHelper
+
   def initialize
     @dealer = Dealer.new
   end
 
   def introduction
-    print 'Добро пожаловать в игру Blackjack! Представьтесь: '
+    print_module(:welcome)
     name = gets.chop.capitalize
     @player = Player.new(name)
   end
@@ -22,55 +25,68 @@ class TextUI
     preparing_game
   end
 
+  def print_module(arg)
+    text_menu = TEXT_UI[arg]
+    puts '-------------------------------------------'
+    puts text_menu[:heading] if text_menu.key?(:heading)
+    send(text_menu[:method][:name], text_menu[:method][:arg]) if text_menu.key?(:method)
+    puts text_menu[:list] if text_menu.key?(:list)
+    print text_menu[:action] if text_menu.key?(:action)
+  end
+
   def preparing_game
     @deck = Deck.new
     2.times { @player.take_card(@deck) }
     2.times { @dealer.take_card(@deck) }
     @player.money -= 10
     @dealer.money -= 10
+    print_module(:start_game)
     player_turn
   end
 
-  def conclude_game
-    player_score = @player.hand.score
-    dealer_score = @dealer.hand.score
-
-    if player_score > 21
-      puts 'Игрок проиграл! Дилер выигрывает.'
+  def find_winner
+    if @player.hand.score > 21
       @dealer.money += 20
-    elsif dealer_score > 21
-      puts 'Дилер проиграл! Игрок выигрывает.'
+      :dealer
+    elsif @dealer.hand.score > 21
       @player.money += 20
-    elsif player_score > dealer_score
-      puts 'Игрок выигрывает!'
+      :player
+    elsif @player.hand.score > @dealer.hand.score
       @player.money += 20
-    elsif dealer_score > player_score
-      puts 'Дилер выигрывает!'
+      :player
+    elsif @dealer.hand.score > @player.hand.score
       @dealer.money += 20
+      :dealer
     else
-      puts 'Ничья'
       @player.money += 10
       @dealer.money += 10
     end
+  end
 
-    score_print
+  def conclude_game
+    winner = find_winner
+    if winner == :player
+      print_module(:player_win)
+    elsif winner == :dealer
+      print_module(:dealer_win)
+    else
+      print_module(:draw_game)
+    end
     re_game
   end
 
-  def score_print
-    puts "У дилера - #{@dealer.show_hand} - общий счет #{@dealer.hand.score}. В банке: #{@dealer.money}$"
+  def score_print(args)
+    dealer_hand = if args == 'conclude_game'
+                    '[ ** ], [ ** ].'
+                  else
+                    "#{@dealer.show_hand} - общий счет #{@dealer.hand.score}."
+                  end
+    puts "У дилера - #{dealer_hand} В банке: #{@dealer.money}$"
     puts "У игрока - #{@player.show_hand} - общий счет #{@player.hand.score}. В банке: #{@player.money}$"
   end
 
   def player_turn
-    score_print
-    puts <<~TEXT
-      Укажите какое действие хотите совершить:
-      1. Добавить карту
-      2. Пропустить ход
-      3. Открыть карты
-    TEXT
-    print "\nВаш выбор: "
+    print_module(:player_turn)
     case gets.chop.to_i
     when 1
       @player.take_card(@deck)
@@ -87,20 +103,23 @@ class TextUI
     conclude_game
   end
 
+  def clear_hand
+    @player.hand.clear
+    @dealer.hand.clear
+  end
+
   def re_game
-    puts <<~TEXT
-      Продолжить игру:
-      1. Да
-      2. Нет
-    TEXT
-    print "\nВаш выбор: "
-    case gets.chop.to_i
-    when 1
-      @player.hand.clear
-      @dealer.hand.clear
-      preparing_game
-    when 2
-      Kernel.exit
+    if @player.money == 0
+      puts 'У Вас кончились деньги и игра закончилась'
+    else
+      print_module(:continue_game)
+      case gets.chop.to_i
+      when 1
+        clear_hand
+        preparing_game
+      when 2
+        Kernel.exit
+      end
     end
   end
 end

@@ -45,5 +45,5 @@ module TextHelper
         arg: 'end_game'
       }
     }
-  }
+  }.freeze
 end

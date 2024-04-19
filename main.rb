@@ -44,32 +44,24 @@ class TextUI
     player_turn
   end
 
-  def find_winner
-    if @player.hand.score > 21
-      @dealer.money += 20
-      :dealer
-    elsif @dealer.hand.score > 21
-      @player.money += 20
-      :player
-    elsif @player.hand.score > @dealer.hand.score
-      @player.money += 20
-      :player
-    elsif @dealer.hand.score > @player.hand.score
-      @dealer.money += 20
-      :dealer
-    else
-      @player.money += 10
-      @dealer.money += 10
-    end
+  def player_win
+    @dealer.hand.score > 21 || (@player.hand.score > @dealer.hand.score && @player.hand.score <= 21)
+  end
+
+  def dealer_win
+    @player.hand.score > 21 || (@dealer.hand.score > @player.hand.score && @dealer.hand.score <= 21)
   end
 
   def conclude_game
-    winner = find_winner
-    if winner == :player
+    if player_win
+      @player.money += 20
       print_module(:player_win)
-    elsif winner == :dealer
+    elsif dealer_win
+      @dealer.money += 20
       print_module(:dealer_win)
     else
+      @player.money += 10
+      @dealer.money += 10
       print_module(:draw_game)
     end
     re_game
@@ -109,8 +101,8 @@ class TextUI
   end
 
   def re_game
-    if @player.money == 0
-      puts 'У Вас кончились деньги и игра закончилась'
+    if @player.money.zero? || @dealer.money.zero?
+      puts 'Игра закончилась, один из банков пуст'
     else
       print_module(:continue_game)
       case gets.chop.to_i

@@ -16,8 +16,9 @@ class Hand
   def score
     score = 0
     @cards.each { |card| score += card.cost }
-    ace_rule = @cards.find { |card| card.value == 'Т' }
-    score -= 10 if ace_rule && score > 21
+    count = @cards.count { |card| card.value == 'Т' }
+    score -= 10 if count > 0 && score > 21
+    score -= 10 if count >= 2 && score > 21
     score
   end
 
